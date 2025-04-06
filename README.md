@@ -8,5 +8,5 @@
 1. Clonar repositorio
 2. Instalar dependencias
 3. crear archivo `.rnv` basado en el `.env.template`.
-4. Ejecutar migración de Prisma `npx prisma migrate dev`
-5. Ejecutar `pnpm run start:dev`
+
+4. Ejecutar `pnpm run start:dev`
