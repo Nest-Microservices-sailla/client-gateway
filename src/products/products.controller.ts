@@ -2,28 +2,28 @@ import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
-import { PRODUCTS_SERVICE } from 'src/config';
+import { NATS_SERVICE} from 'src/config';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
   constructor(
-    @Inject(PRODUCTS_SERVICE) private readonly productClient: ClientProxy
+    @Inject(NATS_SERVICE) private readonly client: ClientProxy
   ) { }
 
   @Post()
   createProduct(
     @Body() createProductDto: CreateProductDto
   ) {
-    return this.productClient.send({ cmd: 'create' }, createProductDto)
+    return this.client.send({ cmd: 'create' }, createProductDto)
   }
 
   @Get()
   getProducts(
     @Query() paginationDto: PaginationDto
   ) {
-    return this.productClient.send({ cmd: 'findAll' }, paginationDto)
+    return this.client.send({ cmd: 'findAll' }, paginationDto)
   }
 
   @Get(':id')
@@ -35,7 +35,7 @@ export class ProductsController {
 
     //?  - 1) -
 
-    /* return this.productClient.send({ cmd: 'findById' }, { id })
+    /* return this.client.send({ cmd: 'findById' }, { id })
     .pipe(
       catchError((error) => {
         throw new RpcException(error)
@@ -46,7 +46,7 @@ export class ProductsController {
 
     try {
 
-      const product = await firstValueFrom(this.productClient.send({ cmd: 'findById' }, { id }))
+      const product = await firstValueFrom(this.client.send({ cmd: 'findById' }, { id }))
       return product
 
     } catch (error) {
@@ -61,7 +61,7 @@ export class ProductsController {
     @Body() updateProductDto: UpdateProductDto
   ) {
     try {
-      const product = await firstValueFrom(this.productClient.send({ cmd: 'update' }, { id, ...updateProductDto }))
+      const product = await firstValueFrom(this.client.send({ cmd: 'update' }, { id, ...updateProductDto }))
       return {
         status: 'success',
         message: `Product with id: ${id}, update successfully`,
@@ -78,7 +78,7 @@ export class ProductsController {
     @Param('id', ParseIntPipe) id: number
   ) {
     try {
-      const product = await firstValueFrom(this.productClient.send({ cmd: 'remove' }, { id }))
+      const product = await firstValueFrom(this.client.send({ cmd: 'remove' }, { id }))
       return {
         status: 'success',
         message: `Product with id: ${id}, deleted successfully`
